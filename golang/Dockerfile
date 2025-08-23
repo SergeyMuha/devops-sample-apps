@@ -4,20 +4,26 @@ FROM golang:1.22-alpine AS builder
 # Set working directory
 WORKDIR /app
 
-# Copy source code
-COPY main.go go.mod ./
+COPY go.mod ./
+RUN go mod download
+
+# Copy the rest of the code
+COPY . .
 
 # Build the Go binary (statically linked)
-RUN go build -o server .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+
+FROM alpine:latest AS certs
+RUN apk add --no-cache ca-certificates
+
 
 # Final runtime stage
-FROM alpine:latest
-
+FROM scratch
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/server .
-
+COPY --from=builder /app/main .
+COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # Copy file.p12 if you want it inside the container
 COPY file.p12 .
 
@@ -25,4 +31,4 @@ COPY file.p12 .
 EXPOSE 80
 
 # Run the app
-CMD ["./server"]
+CMD ["./main"]
