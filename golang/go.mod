@@ -1,0 +1,1 @@
+module doc-go
