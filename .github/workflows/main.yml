@@ -39,10 +39,10 @@ jobs:
           file: ./go/Dockerfile
           push: true
           tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-go:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-go:cache
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-go:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        #   cache-from: type=gha
+        #   cache-to: type=gha,mode=max
 
       # Build & Push PHP image
       - name: Build and push PHP image
@@ -52,7 +52,7 @@ jobs:
           file: ./php/Dockerfile
           push: true
           tags: |
-            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-php:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-php:cache
             ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-php:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        #   cache-from: type=gha
+        #   cache-to: type=gha,mode=max
