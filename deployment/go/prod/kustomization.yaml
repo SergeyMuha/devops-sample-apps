@@ -1,0 +1,30 @@
+resources:
+  - ../../base
+
+images:
+- name: nginx
+  newName: 019496914213.dkr.ecr.eu-north-1.amazonaws.com/doc-go
+  newTag: latest
+
+namespace: go
+namePrefix: prod-go
+labels:
+  - pairs:
+      app: go
+    includeSelectors: true 
+# commonAnnotations:
+#   oncallPager: 800-555-1212
+
+
+patches:
+  - target:
+      kind: Ingress
+      name: apps-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/http/paths/0/path
+        value: /api/v1/
+
+# patchesStrategicMerge:
+#   - deployment.yaml
+#   - service.yaml
