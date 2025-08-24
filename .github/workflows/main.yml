@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 env:
-  
+  AWS_ACCOUNT_ID : ${{ secrets.AWS_ACCOUNT_ID }}
   AWS_REGION : "eu-north-1"
 
 # Permission can be added at job level or workflow level    
@@ -15,18 +15,44 @@ permissions:
       id-token: write   # This is required for requesting the JWT
       contents: read    # This is required for actions/checkout
 jobs:
-  AssumeRoleAndCallIdentity:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Git clone the repository
         uses: actions/checkout@v4
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::019496914213:role/github-actions-oidc-role #change to reflect your IAM role’s ARN
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }} #change to reflect your IAM role’s ARN
           role-session-name: docplanner-github-actions
           aws-region: ${{ env.AWS_REGION }}
-      # Hello from AWS: WhoAmI
-      - name: Sts GetCallerIdentity
-        run: |
-          aws sts get-caller-identity
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # Build & Push Go image
+      - name: Build and push Go image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./go
+          file: ./go/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-go:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-go:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Build & Push PHP image
+      - name: Build and push PHP image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./php
+          file: ./php/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-php:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/doc-php:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
