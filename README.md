@@ -23,3 +23,8 @@ docker push 019496914213.dkr.ecr.eu-north-1.amazonaws.com/doc-php:1.0
 
 
 docker run -p 8080:80 -e APP_ENV=prod doc-php:latest
+
+
+#deploy
+kubectl apply -k deployment/go/prod
+kubectl apply -k deployment/php/prod
