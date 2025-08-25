@@ -7,7 +7,7 @@ images:
   newTag: latest
 
 namespace: go
-namePrefix: prod-go
+namePrefix: prod-go-
 labels:
   - pairs:
       app: go
@@ -19,7 +19,7 @@ labels:
 patches:
   - target:
       kind: Ingress
-      name: apps-ingress
+      name: docplanner-ingress
     patch: |-
       - op: replace
         path: /spec/rules/0/http/paths/0/path

@@ -7,7 +7,7 @@ images:
   newTag: latest
 
 namespace: php
-namePrefix: prod-php
+namePrefix: prod-php-
 labels:
   - pairs:
       app: php
@@ -19,7 +19,7 @@ labels:
 patches:
   - target:
       kind: Ingress
-      name: apps-ingress
+      name: docplanner-ingress
     patch: |-
       - op: replace
         path: /spec/rules/0/http/paths/0/path
