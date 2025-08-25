@@ -33,6 +33,13 @@ patches:
         value:
           - name: APP_ENV
             value: prod
+  - target:
+      kind: Ingress
+      name: docplanner-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: prod.doc-planner.kinokut.com
 
 # patchesStrategicMerge:
 #   - deployment.yaml

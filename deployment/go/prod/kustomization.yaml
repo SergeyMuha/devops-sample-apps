@@ -24,6 +24,13 @@ patches:
       - op: replace
         path: /spec/rules/0/http/paths/0/path
         value: /api/v1/
+  - target:
+      kind: Ingress
+      name: docplanner-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: prod.doc-planner.kinokut.com
 
 # patchesStrategicMerge:
 #   - deployment.yaml
