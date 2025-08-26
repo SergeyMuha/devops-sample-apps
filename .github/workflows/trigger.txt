@@ -1,1 +1,1 @@
-trigger yes
+trigger 1
