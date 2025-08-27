@@ -1,0 +1,46 @@
+resources:
+  - ../../base
+
+images:
+- name: nginx
+  newName: 019496914213.dkr.ecr.eu-north-1.amazonaws.com/doc-php
+  newTag: latest
+
+namespace: php
+namePrefix: dev-php-
+labels:
+  - pairs:
+      app: php
+    includeSelectors: true 
+# commonAnnotations:
+#   oncallPager: 800-555-1212
+
+
+patches:
+  - target:
+      kind: Ingress
+      name: docplanner-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/http/paths/0/path
+        value: /api/v2/
+  - target:
+      kind: Deployment
+      name: docplanner
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+          - name: APP_ENV
+            value: dev
+  - target:
+      kind: Ingress
+      name: docplanner-ingress
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev.doc-planner.kinokut.com
+
+# patchesStrategicMerge:
+#   - deployment.yaml
+#   - service.yaml
